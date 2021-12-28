@@ -135,7 +135,6 @@ def add_table(table_root):
         if col.string == "\n":
             continue
         head_row_cells[i].paragraphs[0].add_run(col.string).bold = True
-        # run = head_row_cells[i].add_paragraph(col.string)
         i += 1
 
     # 数据行
