@@ -10,18 +10,20 @@ from docx.enum.style import WD_STYLE_TYPE
 from docx.enum.text import *
 from docx.oxml.ns import qn
 from docx.shared import Inches, RGBColor
+from docx.styles import style
 from docx.styles.style import _ParagraphStyle
 from docx.text.paragraph import Paragraph
 from docx.text.run import Run
 
-enable_debug: bool = True
-enable_image_desc: bool = True  # 是否显示图片的描述，即 `![desc](src/img)` 中 desc的内容
+debug_state: bool = False
+auto_open: bool = False
+show_image_desc: bool = True  # 是否显示图片的描述，即 `![desc](src/img)` 中 desc的内容
 
 document: Document = Document()
 
 
 def debug(*args):
-    print(*args) if enable_debug else None
+    print(*args) if debug_state else None
 
 
 def init_styles():
@@ -42,6 +44,15 @@ def init_styles():
         new_style._element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')  # 要额外设置中文字体
         new_style.font.color.rgb = RGBColor(0, 0, 0)
 
+    # 引用块
+    blockquote: style = styles.add_style("Block Quote", WD_STYLE_TYPE.PARAGRAPH)
+    # blockquote.base_style = styles["Normal"]
+    blockquote.font.name = "Calibri"  # 只设置name是设置西文字体
+    blockquote._element.rPr.rFonts.set(qn('w:eastAsia'), '黑体')  # 要额外设置中文字体
+    # block_format = blockquote.
+    # blockquote.font.color.rgb = RGBColor(255, 0, 0)
+    blockquote.font.italic = True
+
 
 # h1, h2, ...
 def add_heading(content: str, tag: str):
@@ -52,14 +63,26 @@ def add_heading(content: str, tag: str):
 
 # bold, italic, strike...
 def add_run(p: Paragraph, content: str, char_style: str = "plain"):
+    # fixme 行内的样式超过一个的句子会被忽略，如：
+    # <u>**又加粗又*斜体*又下划线**</u>
     debug("[%s]:" % char_style, content)
+
     run = p.add_run(content)
-    run.bold = (char_style == "strong")
-    run.italic = (char_style == "em")
-    run.underline = (char_style == "u")
-    run.font.strike = (char_style == "strike")
-    run.font.subscript = (char_style == "sub")
-    run.font.superscript = (char_style == "sup")
+
+    # 不应当使用形如 run.bold = (char_style=="strong") 的方式
+    # 因为没有显式加粗，不意味着整体段落不加粗。
+    if char_style == "strong":
+        run.bold = True
+    if char_style == "em":
+        run.italic = True
+    if char_style == "u":
+        run.underline = True
+    if char_style == "strike":
+        run.font.strike = True
+    if char_style == "sub":
+        run.font.subscript = True
+    if char_style == "sup":
+        run.font.superscript = True
     run.font.highlight_color = WD_COLOR_INDEX.YELLOW if char_style == "highlight" else None
 
     # TODO 代码块样式
@@ -91,7 +114,7 @@ def add_picture(elem):
 
     # 如果选择展示图片描述，那么描述会在图片下方显示
     # TODO 图片描述的显示样式设置
-    if enable_image_desc and elem["alt"] != "":
+    if show_image_desc and elem["alt"] != "":
         desc_p: Paragraph = document.add_paragraph(elem["alt"], style="Caption")
         desc_p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
 
@@ -99,6 +122,50 @@ def add_picture(elem):
 # TODO 表格
 def add_table(p: Paragraph, pic_src: str):
     pass
+
+
+def add_number_list(number_list):
+    print(number_list.contents, "\n")
+    # print(number_list.children, "\n")
+
+    for item in number_list.children:
+        if item.string == "\n":
+            continue
+        print(str(item.contents[0]))  # todo 写入word中
+        if item.ol is not None:  # 有子序列
+            for item2 in item.ol.children:
+                if item2.string == "\n":
+                    continue
+                print(" ", item2.string)  # todo 写入word中
+
+
+def add_bullet_list(bullet_list):
+    # print(bullet_list.contents)
+    for item in bullet_list.children:
+        text: str = str(item.string)
+        if text == "\n":
+            continue
+        # 有可能是TODO list
+        if text.startswith("[ ]") or text.startswith("[x]"):
+            add_todo_list(bullet_list)
+            return
+        print(item.contents[0])  # todo 写入word中
+        if hasattr(item, "ul") and item.ul is not None:  # 有子序列
+            for item2 in item.ul.children:
+                if item2.string == "\n":
+                    continue
+                print(" ", item2.string)  # todo 写入word中
+
+
+def add_todo_list(todo_list):
+    for item in todo_list.children:
+        if item.string == "\n":
+            continue
+        text: str = item.string
+        if text.startswith("[x]"):
+            print(text.replace("[x]", "[ √ ]", 1))  # todo 写入word中
+        if text.startswith("[ ]"):
+            print(text.replace("[ ]", "[   ]", 1))  # todo 写入word中
 
 
 # TODO 分割线
@@ -112,19 +179,17 @@ def add_link(p: Paragraph, text: str, src: str):
     run = p.add_run(text)
 
 
-def add_paragraph(children: [], parent_paragraph: Paragraph = None):
+def add_paragraph(children, style: str = None):
     """
+    :param style:
     :type children: list
     一个段落内的元素（包括图片）。根据有无样式来划分，组成一个列表。
     有样式文字如加粗、斜体、图片、等。
     如`I am plain _while_ he is **bold**`将转为：
     ["I am plain", "while", "he is", "bold"]
 
-    :param parent_paragraph
-    父级段落，一般可能是引用块(blockquote)。此时的新段落的样式继承父段落的样式，设置为None
     """
-    style = "Normal" if parent_paragraph is None else None
-    p: Paragraph = document.add_paragraph(style=style)
+    p = document.add_paragraph(style=style)
     for elem in children.contents:  # 遍历一个段落内的所有元素
         if elem.name == "a":
             add_link(p, elem.string, elem["href"])
@@ -137,9 +202,11 @@ def add_paragraph(children: [], parent_paragraph: Paragraph = None):
 
 
 # from docx.enum.style import WD_STYLE
-def add_blockquote(children: []):
-    block: Paragraph = document.add_paragraph(style="Comment Text")
-    add_paragraph(children, block)
+def add_blockquote(children):
+    debug(children.contents)
+    for p in children.contents:
+        if p.string != "\n":
+            add_paragraph(p, style="Block Quote")
 
 
 class DocxProcessing:
@@ -154,14 +221,23 @@ class DocxProcessing:
         init_styles()
         # 逐个写到word中
         for sub_item in body_tag.children:
-            if not sub_item.string == "\n":
-                debug(sub_item.name)
+            if sub_item.string != "\n":
+                # debug("<%s>" % sub_item.name)
 
                 # 判断是普通段落还是标题
-                if sub_item.name == "p" or sub_item.name == "blockquote":
+                if sub_item.name == "p":
                     add_paragraph(sub_item)
+
                 if sub_item.name == "blockquote":
                     add_blockquote(sub_item)
+
+                if sub_item.name == "ol":  # 数字列表
+                    add_number_list(sub_item)
+                    pass
+
+                if sub_item.name == "ul":  # 无序列表 或 TODO_List
+                    add_bullet_list(sub_item)
+                    pass
 
                 if sub_item.name == "h1" or sub_item.name == "h2" or \
                         sub_item.name == "h3" or sub_item.name == "h4" or sub_item.name == "h5":
@@ -173,5 +249,5 @@ class DocxProcessing:
 
 if __name__ == '__main__':
     _ = DocxProcessing("example.html", "example.docx")
-
-    os.startfile("example.docx")
+    if auto_open:
+        os.startfile("example.docx")
