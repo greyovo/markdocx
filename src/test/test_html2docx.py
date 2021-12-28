@@ -113,9 +113,9 @@ def add_picture(elem):
         run.add_picture(data_stream, width=Inches(5.8))
 
     # 如果选择展示图片描述，那么描述会在图片下方显示
-    
+
     if show_image_desc and elem["alt"] != "":
-        desc_p: Paragraph = document.add_paragraph(elem["alt"], style="Caption") # TODO 图片描述的显示样式
+        desc_p: Paragraph = document.add_paragraph(elem["alt"], style="Caption")  # TODO 图片描述的显示样式
         desc_p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
 
 
@@ -125,8 +125,8 @@ def add_table(table_root):
     for col in table_root.thead.tr.contents:
         if col.string != "\n":
             col_count += 1
-    
-    table = document.add_table(0, col_count, style="Table Grid") # TODO 表格样式
+
+    table = document.add_table(0, col_count, style="Table Grid")  # TODO 表格样式
 
     # 表格头行
     head_row_cells = table.add_row().cells
@@ -134,7 +134,8 @@ def add_table(table_root):
     for col in table_root.thead.tr.contents:
         if col.string == "\n":
             continue
-        head_row_cells[i].text = col.string
+        head_row_cells[i].paragraphs[0].add_run(col.string).bold = True
+        # run = head_row_cells[i].add_paragraph(col.string)
         i += 1
 
     # 数据行
