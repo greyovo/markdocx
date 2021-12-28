@@ -2,6 +2,13 @@
 
 如您所见，# 号开头即为标题，从一级到六级。
 
+## 表格
+
+| Name  | Age  | Sex    |
+| ----- | ---- | ------ |
+| Jack  | 22   | male   |
+| Grace | 33   | female |
+
 ## 文字格式
 
 `Markdown` 是当下流行文档书写语言，旨在通过简单的语法实现对常见格式的支持。
@@ -74,12 +81,4 @@ $$
 ![](assets/windows11.png)
 
 
-![网络图片]("https://p1.itc.cn/q_70/images01/20210608/2de4b5a9f4db46ee83b1081dc557929e.jpeg")
 
-## 表格
-
-| Name  | Age  | Sex    |
-| ----- | ---- | ------ |
-| Jack  | 22   | male   |
-| Grace | 33   | female |
-| Tom   |      |        |

@@ -16,7 +16,7 @@ from docx.text.paragraph import Paragraph
 from docx.text.run import Run
 
 debug_state: bool = False
-auto_open: bool = False
+auto_open: bool = True
 show_image_desc: bool = True  # 是否显示图片的描述，即 `![desc](src/img)` 中 desc的内容
 
 document: Document = Document()
@@ -107,21 +107,47 @@ def add_picture(elem):
     else:
         img_src = elem["title"]
         # if img_src.startswith("http"):
-        debug("[remote image]:", img_src)
+        print("[fetching image...]:", img_src)
         image_bytes = urlopen(img_src).read()
         data_stream = io.BytesIO(image_bytes)
         run.add_picture(data_stream, width=Inches(5.8))
 
     # 如果选择展示图片描述，那么描述会在图片下方显示
-    # TODO 图片描述的显示样式设置
+    
     if show_image_desc and elem["alt"] != "":
-        desc_p: Paragraph = document.add_paragraph(elem["alt"], style="Caption")
+        desc_p: Paragraph = document.add_paragraph(elem["alt"], style="Caption") # TODO 图片描述的显示样式
         desc_p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
 
 
-# TODO 表格
-def add_table(p: Paragraph, pic_src: str):
-    pass
+def add_table(table_root):
+    # 统计列数
+    col_count: int = 0
+    for col in table_root.thead.tr.contents:
+        if col.string != "\n":
+            col_count += 1
+    
+    table = document.add_table(0, col_count, style="Table Grid") # TODO 表格样式
+
+    # 表格头行
+    head_row_cells = table.add_row().cells
+    i = 0
+    for col in table_root.thead.tr.contents:
+        if col.string == "\n":
+            continue
+        head_row_cells[i].text = col.string
+        i += 1
+
+    # 数据行
+    for tr in table_root.tbody:
+        if tr.string == "\n":
+            continue
+        row_cells = table.add_row().cells
+        i = 0
+        for td in tr.contents:
+            if td.string == "\n":
+                continue
+            row_cells[i].text = td.string
+            i += 1
 
 
 def add_number_list(number_list):
@@ -131,12 +157,12 @@ def add_number_list(number_list):
     for item in number_list.children:
         if item.string == "\n":
             continue
-        print(str(item.contents[0]))  # todo 写入word中
+        print(str(item.contents[0]))  # TODO 写入word中
         if item.ol is not None:  # 有子序列
             for item2 in item.ol.children:
                 if item2.string == "\n":
                     continue
-                print(" ", item2.string)  # todo 写入word中
+                print(" ", item2.string)  # TODO 写入word中
 
 
 def add_bullet_list(bullet_list):
@@ -149,12 +175,12 @@ def add_bullet_list(bullet_list):
         if text.startswith("[ ]") or text.startswith("[x]"):
             add_todo_list(bullet_list)
             return
-        print(item.contents[0])  # todo 写入word中
+        print(item.contents[0])  # TODO 写入word中
         if hasattr(item, "ul") and item.ul is not None:  # 有子序列
             for item2 in item.ul.children:
                 if item2.string == "\n":
                     continue
-                print(" ", item2.string)  # todo 写入word中
+                print(" ", item2.string)  # TODO 写入word中
 
 
 def add_todo_list(todo_list):
@@ -163,9 +189,9 @@ def add_todo_list(todo_list):
             continue
         text: str = item.string
         if text.startswith("[x]"):
-            print(text.replace("[x]", "[ √ ]", 1))  # todo 写入word中
+            print(text.replace("[x]", "[ √ ]", 1))  # TODO 写入word中
         if text.startswith("[ ]"):
-            print(text.replace("[ ]", "[   ]", 1))  # todo 写入word中
+            print(text.replace("[ ]", "[   ]", 1))  # TODO 写入word中
 
 
 # TODO 分割线
@@ -220,28 +246,34 @@ class DocxProcessing:
         # 初始化样式
         init_styles()
         # 逐个写到word中
-        for sub_item in body_tag.children:
-            if sub_item.string != "\n":
-                # debug("<%s>" % sub_item.name)
+        for root in body_tag.children:
+            if root.string != "\n":
+                # debug("<%s>" % root.name)
 
                 # 判断是普通段落还是标题
-                if sub_item.name == "p":
-                    add_paragraph(sub_item)
+                if root.name == "p":
+                    add_paragraph(root)
 
-                if sub_item.name == "blockquote":
-                    add_blockquote(sub_item)
+                if root.name == "blockquote":
+                    add_blockquote(root)
 
-                if sub_item.name == "ol":  # 数字列表
-                    add_number_list(sub_item)
+                if root.name == "ol":  # TODO 数字列表
+                    # add_number_list(root)
                     pass
 
-                if sub_item.name == "ul":  # 无序列表 或 TODO_List
-                    add_bullet_list(sub_item)
+                if root.name == "ul":  # TODO 无序列表 或 TODO_List
+                    # add_bullet_list(root)
                     pass
 
-                if sub_item.name == "h1" or sub_item.name == "h2" or \
-                        sub_item.name == "h3" or sub_item.name == "h4" or sub_item.name == "h5":
-                    para = add_heading(sub_item.string, sub_item.name)
+                if root.name == "table":
+                    # fixme 测试看不同的效果而已
+                    # for i in range(1, 7):
+                    add_table(root)
+                    pass
+
+                if root.name == "h1" or root.name == "h2" or \
+                        root.name == "h3" or root.name == "h4" or root.name == "h5":
+                    para = add_heading(root.string, root.name)
 
         document.save(docx_path)
         print("docx saved to:", docx_path)
