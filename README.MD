@@ -15,7 +15,7 @@ test_main.py input.md -o ouput.docx
 ```
 其中 `-o` 参数是可选的，没有则保存到与 `input.md` 同目录位置、同名的 docx 文件。
 
-如果是绝对路径，需要用英文(半角)双引号包起来，如
+如果是路径包含文件夹，需要用英文(半角)双引号包起来，如
 
 ```shell script
 test_main.py "D:/folder/input.md" -o "D:/folder/input.md"
