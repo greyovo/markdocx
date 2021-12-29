@@ -31,7 +31,7 @@ test_main.py "D:/folder/input.md" -o "D:/folder/input.md"
     请避免使用复合标记。
 2. 代码块中如果有 `#` 或 `*` 等 markdown 行内标记的符号，有可能会被误识别为markdown文本而错误渲染，待解决。
 
-## 段落样式 TODO
+## 样式 TODO
 
 - [x] 普通段落
 - [x] 大纲标题
@@ -41,13 +41,15 @@ test_main.py "D:/folder/input.md" -o "D:/folder/input.md"
 - [x] 表格
 - [x] 超链接
 - [x] 分割线，在docx中表现为分页符
-
-## 行内样式 TODO 
-
 - [x] 加粗、斜体、下划线
 - [x] 上标、下标
 - [x] 高亮文本
 
+## 未来计划
+
+- [ ] 使用 yaml 导入样式参数，方便自定义样式
+- [ ] 提供 GUI
+ 
 ## 暂时无法实现
 - LaTeX
 - 脚注
