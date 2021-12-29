@@ -41,7 +41,6 @@ class DocxProcessor:
         # fixme 行内的样式超过一个的句子会被忽略，如：
         # <u>**又加粗又*斜体*又下划线**</u>
         debug("[%s]:" % char_style, content)
-
         run = p.add_run(content)
 
         # 不应当使用形如 run.bold = (char_style=="strong") 的方式

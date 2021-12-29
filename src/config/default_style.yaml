@@ -1,15 +1,15 @@
-# 参数解释。注意冒号或短横线后必须接一个空格，不能省略
+# 参数解释。注意冒号或短横线后必须接一个空格，不能省略。
 #  font:
-#    default: 西文字体
-#    eastern: 中文字体
-#  indent: 首行缩进，如 2x
-#  size: 字体大小，如 12pt
-#  line-spacing: 行距，如 1.5x 表示 1.5 倍行距
+#    default: 西文字体，默认 [Times New Roman]
+#    eastern: 中文字体，默认 [宋体]
+#  indent: 首行缩进，默认 [0]，单位：倍
+#  size: 字体大小，默认 [12]，单位：pt
+#  line-spacing: 行距，默认 [1.2] 单位：倍，表示 1.2 倍行距，
 #  space:
-#    before 段前空格，单位pt
-#    after: 段后空格，单位pt
-#  color: RGB颜色的16进制值，如 000000 => 黑色
-#  extra: 可选，额外的样式，包含下列量，有则设置，无则不设置
+#    before 段前空格，默认 [0]
+#    after: 段后空格，默认 [0]
+#  color: RGB颜色的 16 进制值，默认 [000000] 纯黑色
+#  extra: 额外的样式，默认不添加这些样式。支持下列样式，有则生效，无则忽略
 #  - bold 加粗
 #  - italic 斜体
 #  - underline 下划线
