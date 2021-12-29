@@ -1,7 +1,7 @@
 # 参数解释。注意冒号或短横线后必须接一个空格，不能省略
 #  font:
 #    default: 西文字体
-#    east-asian: 中文字体
+#    eastern: 中文字体
 #  indent: 首行缩进，如 2x
 #  size: 字体大小，如 12pt
 #  line-spacing: 行距，如 1.5x 表示 1.5 倍行距

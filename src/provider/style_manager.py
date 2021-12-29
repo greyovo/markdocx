@@ -1,3 +1,4 @@
+import docx
 from docx import Document
 from docx.enum.style import WD_STYLE_TYPE
 from docx.enum.text import *
@@ -9,15 +10,13 @@ from docx.styles.style import _ParagraphStyle, BaseStyle
 
 class StyleManager:
 
-    def __init__(self, doc, style_conf: dict):
-        self.document = doc
+    def __init__(self, doc: Document, style_conf: dict):
+        self.styles = doc.styles
         self.style_conf = style_conf
 
     def init_styles(self):
-        styles = self.document.styles
-
         # 正文
-        normal = styles['Normal']
+        normal = self.styles['Normal']
         normal.font.name = "Times New Roman"  # 只设置name是设置西文字体
         normal._element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')  # 要额外设置中文字体
         normal.paragraph_format.space_after = Pt(5)
@@ -26,19 +25,10 @@ class StyleManager:
 
         # 各级标题
         # 直接对heading的样式设置是不生效的，需要新建一个同名样式覆盖
-        for i in range(1, 5):
-            new_style: _ParagraphStyle = styles.add_style('Heading%d' % i, WD_STYLE_TYPE.PARAGRAPH)
-            new_style.base_style = styles['Heading %d' % i]
-            new_style.quick_style = True
-            new_style.font.name = "Times New Roman"  # 只设置name是设置西文字体
-            new_style._element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')  # 要额外设置中文字体
-            new_style.font.color.rgb = RGBColor(0, 0, 0)
-            # 去除段落前面左上角的黑点
-            new_style.paragraph_format.keep_together = False
-            new_style.paragraph_format.keep_with_next = False
+        self.init_heading()
 
         # 引用块
-        blockquote: style = styles.add_style("Block Quote", WD_STYLE_TYPE.PARAGRAPH)
+        blockquote: style = self.styles.add_style("Block Quote", WD_STYLE_TYPE.PARAGRAPH)
         # blockquote.base_style = styles["Normal"]
         blockquote.font.name = "Times New Roman"  # 只设置name是设置西文字体
         blockquote._element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')  # 要额外设置中文字体
@@ -46,17 +36,25 @@ class StyleManager:
         blockquote.font.italic = True
 
         # 图片描述
-        caption: style = styles["Caption"]
+        caption: style = self.styles["Caption"]
         caption.font.name = "Times New Roman"  # 只设置name是设置西文字体
         caption._element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')  # 要额外设置中文字体
         caption.font.color.rgb = RGBColor(0, 0, 0)
         caption.font.bold = False
 
-    def init_normal(self):
-        pass
-
     def init_heading(self):
-        pass
+        for i in range(1, 5):
+            conf = self.style_conf["h%d" % i]
+            new_style: _ParagraphStyle = self.styles.add_style('Heading%d' % i, WD_STYLE_TYPE.PARAGRAPH)
+            new_style.base_style = self.styles['Heading %d' % i]
+            new_style.quick_style = True
+            new_style.font.name = conf["font"]["default"]  # 只设置name是设置西文字体
+            new_style._element.rPr.rFonts.set(qn('w:eastAsia'), conf["font"]["eastern"])  # 要额外设置中文字体
+            new_style.font.color.rgb = RGBColor(0, 0, 0)
+            # 去除段落前面左上角的黑点
+            new_style.paragraph_format.keep_together = False
+            new_style.paragraph_format.keep_with_next = False
 
-    def init_list(self):
+    # 通用的样式设置
+    def init_style(self, name: str, detail: dict, style_type: docx.enum.style, quick_style: bool):
         pass
