@@ -1,19 +1,31 @@
+import argparse
+import sys
+
 from src.test.test_md2html import MarkdownParser
 from src.test.test_html2docx import DocxProcessing
 import time
 
+config: dict = {
+    "version": "0.1.0"
+}
+
 if __name__ == '__main__':
-    start_time = time.time()
-    md_path = "example.md"  # 你的md源文件路径
-    html_path = "example.html"  # 中途临时导出的HTML文件路径，可不修改
-    docx_path = "example.docx"  # 最后生成的docx文件存放路径
+    if len(sys.argv) == 1:
+        print('markdocx: type "-h" for help.')
+        exit(0)
 
-    # md_path = "note_demo.md"  # 你的md源文件路径
-    # html_path = "note_demo.html"  # 中途临时导出的HTML文件路径，可不修改
-    # docx_path = "note_demo.docx"  # 最后生成的docx文件存放路径
+    parser = argparse.ArgumentParser(description="markdocx - %s" % config["version"])
+    parser.add_argument('input', help="Markdown file path")
+    parser.add_argument('-o', '--output', help="Optional. Path to save docx file")
+    # parser.add_argument('-s', '--style', help="你的样式文件，yaml") todo 通过yaml自定义样式文件
 
-    _ = MarkdownParser(md_path, html_path)
-    _ = DocxProcessing(html_path, docx_path)
+    args = parser.parse_args()
 
+    start_time = time.time()  # 记录转换耗时
+    MarkdownParser(args.input, args.input + ".html")
+    docx_path = args.output if args.output is not None else args.input + ".docx"
+    DocxProcessing(args.input + ".html", docx_path)
     done_time = time.time()
-    print("All done. Time cost:", "%.4f" % (done_time - start_time), "sec")
+
+    print("Convert finished in:", "%.4f" % (done_time - start_time), "sec(s)")
+    print("Docx saved to:", docx_path)

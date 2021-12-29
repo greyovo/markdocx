@@ -4,6 +4,8 @@ from docx.enum.dml import MSO_THEME_COLOR_INDEX
 
 def add_hyperlink(paragraph, url, text):
     """
+    Reference from：https://github.com/python-openxml/python-docx/issues/384
+
     A function that places a hyperlink within a paragraph object.
     :param paragraph: The paragraph we are adding the hyperlink to.
     :param url: A string containing the required url

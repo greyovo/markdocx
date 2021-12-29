@@ -14,7 +14,7 @@ class MarkdownParser:
             html_file.write("""<head><meta charset="utf-8"></head>\n<body>\n""")
             html_file.write(html)
             html_file.write("</body>")
-            print("temp HTML saved to:", out_path)
+            # print("temp HTML saved to:", out_path)
 
 
 if __name__ == '__main__':

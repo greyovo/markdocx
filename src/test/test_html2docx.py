@@ -46,6 +46,9 @@ def init_styles():
         new_style.font.name = "Times New Roman"  # 只设置name是设置西文字体
         new_style._element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')  # 要额外设置中文字体
         new_style.font.color.rgb = RGBColor(0, 0, 0)
+        # 去除段落前面左上角的黑点
+        new_style.paragraph_format.keep_together = False
+        new_style.paragraph_format.keep_with_next = False
 
     # 引用块
     blockquote: style = styles.add_style("Block Quote", WD_STYLE_TYPE.PARAGRAPH)
@@ -227,8 +230,6 @@ def add_split_line():
 
 from src.provider.docx.docx_plus import *
 
-debug_state = True
-
 
 # TODO 超链接
 def add_link(p: Paragraph, text: str, href: str):
@@ -300,7 +301,6 @@ class DocxProcessing:
                     add_heading(root.string, root.name)
 
         document.save(docx_path)
-        print("docx saved to:", docx_path)
 
 
 if __name__ == '__main__':
