@@ -161,49 +161,44 @@ def add_table(table_root):
 
 def add_number_list(number_list):
     # print(number_list.contents, "\n")
-    # list_para = document.add_paragraph(style="List Number")
-    num: int = 1
+    num: int = 1  # 序号
     for item in number_list.children:
         if item.string == "\n":
             continue
-        # list_para.add_run("%d. " % num + str(item.contents[0]) + "\n")
-        document.add_paragraph(str(item.contents[0]), style="List Number") \
+        add_paragraph(item, p_style="List Number") \
             .style.paragraph_format.space_after = Pt(1)  # TODO 数字列表样式
+
         if hasattr(item, "ol") and item.ol is not None:  # 有子序列
-            sub_num: int = 1
+            sub_num: int = 1  # 子序号
             for item2 in item.ol.children:
                 if item2.string == "\n":
                     continue
-                # list_para.add_run("    %d.%d. " % (num, sub_num) + str(item2.string) + "\n")
-                document.add_paragraph("(%d) " % sub_num + str(item2.string), style="List Continue") \
+                add_paragraph(item2, prefix="(%d). " % sub_num, p_style="List Continue") \
                     .style.paragraph_format.space_after = Pt(1)  # TODO 数字列表样式
                 sub_num += 1
         num += 1
 
 
-# 伪列表，因为python-docx内未实现该API
 def add_bullet_list(bullet_list):
     # 有可能是TODO list
     text = str(bullet_list.contents[1].string).strip()
     if text.startswith("[ ]") or text.startswith("[x]"):
         add_todo_list(bullet_list)
         return
-    # print(bullet_list.contents)
-    # list_para = document.add_paragraph()
     for item in bullet_list.children:
         text: str = str(item.string)
         if text == "\n":
             continue
-        # list_para.add_run("• " + str(item.contents[0]) + "\n")  # ·• ‣°º৹ ■ ◻ ■ □ ◉◎ ●◌
-        document.add_paragraph(str(item.contents[0]), style="List Bullet") \
-            .style.paragraph_format.space_after = Pt(1)  # TODO 无序列表样式
+        add_paragraph(item, p_style="List Bullet") \
+            .style.paragraph_format.space_after = Pt(1)  # TODO 无序列表样式 ·• ‣°º৹ ■ ◻ ■ □ ◉◎ ●◌
+
         if hasattr(item, "ul") and item.ul is not None:  # 有子序列
             for item2 in item.ul.children:
                 if item2.string == "\n":
                     continue
                 # list_para.add_run("   ◉ " + str(item2.string) + "\n")
-                document.add_paragraph("• " + str(item2.string), style="List Continue") \
-                    .style.paragraph_format.space_after = Pt(1)  # TODO 无序列表样式
+                add_paragraph(item2, prefix="•  ", p_style="List Continue") \
+                    .style.paragraph_format.space_after = Pt(1)  # TODO 数字列表样式
 
 
 # 伪TODO list
@@ -225,27 +220,35 @@ def add_todo_list(todo_list):
 
 
 # TODO 分割线
-def add_split_line(p: Paragraph):
+def add_split_line():
+    document.add_page_break()
     pass
 
 
+from src.provider.docx.docx_plus import *
+
+debug_state = True
+
+
 # TODO 超链接
-def add_link(p: Paragraph, text: str, src: str):
-    debug("[link]:", text, "[src]:", src)
-    run = p.add_run(text)
+def add_link(p: Paragraph, text: str, href: str):
+    debug("[link]:", text, "[href]:", href)
+    add_hyperlink(p, href, text)
+    # run = p.add_run(text)
 
 
-def add_paragraph(children, style: str = None):
+def add_paragraph(children, p_style: str = None, prefix: str = ""):
     """
-    :param style:
-    :type children: list
+    children: list|str
     一个段落内的元素（包括图片）。根据有无样式来划分，组成一个列表。
     有样式文字如加粗、斜体、图片、等。
     如`I am plain _while_ he is **bold**`将转为：
     ["I am plain", "while", "he is", "bold"]
-
     """
-    p = document.add_paragraph(style=style)
+    p = document.add_paragraph(prefix, style=p_style)
+    if type(children) == str:
+        p.add_run(children)
+        return
     for elem in children.contents:  # 遍历一个段落内的所有元素
         if elem.name == "a":
             add_link(p, elem.string, elem["href"])
@@ -255,6 +258,7 @@ def add_paragraph(children, style: str = None):
             add_run(p, elem.string, elem.name)
         elif not elem.string == "\n":  # 无字符样式的子串
             add_run(p, elem)
+    return p
 
 
 # from docx.enum.style import WD_STYLE
@@ -262,7 +266,7 @@ def add_blockquote(children):
     debug(children.contents)
     for p in children.contents:
         if p.string != "\n":
-            add_paragraph(p, style="Block Quote")
+            add_paragraph(p, p_style="Block Quote")
 
 
 class DocxProcessing:
@@ -279,25 +283,18 @@ class DocxProcessing:
         for root in body_tag.children:
             if root.string != "\n":
                 # debug("<%s>" % root.name)
-
                 if root.name == "p":  # 普通段落
                     add_paragraph(root)
-
                 if root.name == "blockquote":  # 引用块
                     add_blockquote(root)
-
-                if root.name == "ol":  # TODO 数字列表
+                if root.name == "ol":  # 数字列表
                     add_number_list(root)
-                    pass
-
-                if root.name == "ul":  # TODO 无序列表 或 TODO_List
+                if root.name == "ul":  # 无序列表 或 TODO_List
                     add_bullet_list(root)
-                    pass
-
                 if root.name == "table":  # 表格
                     add_table(root)
-                    pass
-
+                if root.name == "hr":
+                    add_split_line()
                 if root.name == "h1" or root.name == "h2" or \
                         root.name == "h3" or root.name == "h4" or root.name == "h5":
                     add_heading(root.string, root.name)
