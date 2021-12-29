@@ -29,7 +29,7 @@ document.add_paragraph(
     'first item in ordered list', style='List Number'
 )
 
-document.add_picture('windows11.png', width=Inches(1.25))
+# document.add_picture('windows11.png', width=Inches(1.25))
 
 records = (
     (3, '101', 'Spam'),

@@ -31,11 +31,11 @@ def init_styles():
 
     # 正文
     normal = styles['Normal']
-    normal.font.name = "Calibri"  # 只设置name是设置西文字体
+    normal.font.name = "Times New Roman"  # 只设置name是设置西文字体
     normal._element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')  # 要额外设置中文字体
     normal.paragraph_format.space_after = Pt(5)
     normal.paragraph_format.space_before = Pt(5)
-    normal.paragraph_format.line_spacing = 1.25
+    normal.paragraph_format.line_spacing = 1.15
 
     # 各级标题
     # 直接对heading的样式设置是不生效的，需要新建一个同名样式覆盖
@@ -50,7 +50,7 @@ def init_styles():
     # 引用块
     blockquote: style = styles.add_style("Block Quote", WD_STYLE_TYPE.PARAGRAPH)
     # blockquote.base_style = styles["Normal"]
-    blockquote.font.name = "Calibri"  # 只设置name是设置西文字体
+    blockquote.font.name = "Times New Roman"  # 只设置name是设置西文字体
     blockquote._element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')  # 要额外设置中文字体
     # blockquote.font.color.rgb = RGBColor(255, 0, 0)
     blockquote.font.italic = True
@@ -97,9 +97,6 @@ def add_run(p: Paragraph, content: str, char_style: str = "plain"):
     # TODO 代码块样式
     if char_style == "code":
         run.font.name = "Consolas"
-
-    # TODO 引用块
-    # TODO 有序列表、无序列表、TODO列表
 
 
 def add_picture(elem):
@@ -211,16 +208,20 @@ def add_bullet_list(bullet_list):
 
 # 伪TODO list
 def add_todo_list(todo_list):
-    list_para = document.add_paragraph()
-    list_para.style.font.name = "Consolas"
+    # list_para.style.font.name = "Consolas"
     for item in todo_list.children:
         if item.string == "\n":
             continue
         text: str = item.string
+        list_para = document.add_paragraph(style="List")
         if text.startswith("[x]"):
-            list_para.add_run(text.replace("[x]", "[ √ ]", 1) + "\n")
+            # list_para.add_run(text.replace("[x]", "[ √ ]", 1) + "\n")
+            list_para.add_run("[ √ ]").font.name = "Consolas"
+            list_para.add_run(text.replace("[x]", " ", 1))
         if text.startswith("[ ]"):
-            list_para.add_run(text.replace("[ ]", "[   ]", 1) + "\n")
+            # list_para.add_run(text.replace("[ ]", "[   ]", 1) + "\n")
+            list_para.add_run("[   ]").font.name = "Consolas"
+            list_para.add_run(text.replace("[ ]", " ", 1))
 
 
 # TODO 分割线
