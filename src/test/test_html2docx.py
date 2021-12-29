@@ -9,7 +9,7 @@ from docx import Document
 from docx.enum.style import WD_STYLE_TYPE
 from docx.enum.text import *
 from docx.oxml.ns import qn
-from docx.shared import Inches, RGBColor
+from docx.shared import Inches, RGBColor, Pt
 from docx.styles import style
 from docx.styles.style import _ParagraphStyle
 from docx.text.paragraph import Paragraph
@@ -33,6 +33,9 @@ def init_styles():
     normal = styles['Normal']
     normal.font.name = "Calibri"  # 只设置name是设置西文字体
     normal._element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')  # 要额外设置中文字体
+    normal.paragraph_format.space_after = Pt(5)
+    normal.paragraph_format.space_before = Pt(5)
+    normal.paragraph_format.line_spacing = 1.25
 
     # 各级标题
     # 直接对heading的样式设置是不生效的，需要新建一个同名样式覆盖
@@ -48,10 +51,16 @@ def init_styles():
     blockquote: style = styles.add_style("Block Quote", WD_STYLE_TYPE.PARAGRAPH)
     # blockquote.base_style = styles["Normal"]
     blockquote.font.name = "Calibri"  # 只设置name是设置西文字体
-    blockquote._element.rPr.rFonts.set(qn('w:eastAsia'), '黑体')  # 要额外设置中文字体
-    # block_format = blockquote.
+    blockquote._element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')  # 要额外设置中文字体
     # blockquote.font.color.rgb = RGBColor(255, 0, 0)
     blockquote.font.italic = True
+
+    # 图片描述
+    caption: style = styles["Caption"]
+    caption.font.name = "Times New Roman"  # 只设置name是设置西文字体
+    caption._element.rPr.rFonts.set(qn('w:eastAsia'), '宋体')  # 要额外设置中文字体
+    caption.font.color.rgb = RGBColor(0, 0, 0)
+    caption.font.bold = False
 
 
 # h1, h2, ...
@@ -134,7 +143,7 @@ def add_table(table_root):
     for col in table_root.thead.tr.contents:
         if col.string == "\n":
             continue
-        head_row_cells[i].paragraphs[0].add_run(col.string).bold = True
+        head_row_cells[i].paragraphs[0].add_run(col.string).bold = True  # TODO 表内单元格字符样式
         i += 1
 
     # 数据行
@@ -150,48 +159,68 @@ def add_table(table_root):
             i += 1
 
 
-def add_number_list(number_list):
-    print(number_list.contents, "\n")
-    # print(number_list.children, "\n")
+# auto_open = False
 
+
+def add_number_list(number_list):
+    # print(number_list.contents, "\n")
+    # list_para = document.add_paragraph(style="List Number")
+    num: int = 1
     for item in number_list.children:
         if item.string == "\n":
             continue
-        print(str(item.contents[0]))  # TODO 写入word中
-        if item.ol is not None:  # 有子序列
+        # list_para.add_run("%d. " % num + str(item.contents[0]) + "\n")
+        document.add_paragraph(str(item.contents[0]), style="List Number") \
+            .style.paragraph_format.space_after = Pt(1)  # TODO 数字列表样式
+        if hasattr(item, "ol") and item.ol is not None:  # 有子序列
+            sub_num: int = 1
             for item2 in item.ol.children:
                 if item2.string == "\n":
                     continue
-                print(" ", item2.string)  # TODO 写入word中
+                # list_para.add_run("    %d.%d. " % (num, sub_num) + str(item2.string) + "\n")
+                document.add_paragraph("(%d) " % sub_num + str(item2.string), style="List Continue") \
+                    .style.paragraph_format.space_after = Pt(1)  # TODO 数字列表样式
+                sub_num += 1
+        num += 1
 
 
+# 伪列表，因为python-docx内未实现该API
 def add_bullet_list(bullet_list):
+    # 有可能是TODO list
+    text = str(bullet_list.contents[1].string).strip()
+    if text.startswith("[ ]") or text.startswith("[x]"):
+        add_todo_list(bullet_list)
+        return
     # print(bullet_list.contents)
+    # list_para = document.add_paragraph()
     for item in bullet_list.children:
         text: str = str(item.string)
         if text == "\n":
             continue
-        # 有可能是TODO list
-        if text.startswith("[ ]") or text.startswith("[x]"):
-            add_todo_list(bullet_list)
-            return
-        print(item.contents[0])  # TODO 写入word中
+        # list_para.add_run("• " + str(item.contents[0]) + "\n")  # ·• ‣°º৹ ■ ◻ ■ □ ◉◎ ●◌
+        document.add_paragraph(str(item.contents[0]), style="List Bullet") \
+            .style.paragraph_format.space_after = Pt(1)  # TODO 无序列表样式
         if hasattr(item, "ul") and item.ul is not None:  # 有子序列
             for item2 in item.ul.children:
                 if item2.string == "\n":
                     continue
-                print(" ", item2.string)  # TODO 写入word中
+                # list_para.add_run("   ◉ " + str(item2.string) + "\n")
+                document.add_paragraph("• " + str(item2.string), style="List Continue") \
+                    .style.paragraph_format.space_after = Pt(1)  # TODO 无序列表样式
 
 
+# 伪TODO list
 def add_todo_list(todo_list):
+    list_para = document.add_paragraph()
+    list_para.style.font.name = "Consolas"
     for item in todo_list.children:
         if item.string == "\n":
             continue
         text: str = item.string
         if text.startswith("[x]"):
-            print(text.replace("[x]", "[ √ ]", 1))  # TODO 写入word中
+            list_para.add_run(text.replace("[x]", "[ √ ]", 1) + "\n")
         if text.startswith("[ ]"):
-            print(text.replace("[ ]", "[   ]", 1))  # TODO 写入word中
+            list_para.add_run(text.replace("[ ]", "[   ]", 1) + "\n")
 
 
 # TODO 分割线
@@ -245,35 +274,32 @@ class DocxProcessing:
         para: Paragraph
         # 初始化样式
         init_styles()
-        # 逐个写到word中
+        # 逐个解析标签，并写到word中
         for root in body_tag.children:
             if root.string != "\n":
                 # debug("<%s>" % root.name)
 
-                # 判断是普通段落还是标题
-                if root.name == "p":
+                if root.name == "p":  # 普通段落
                     add_paragraph(root)
 
-                if root.name == "blockquote":
+                if root.name == "blockquote":  # 引用块
                     add_blockquote(root)
 
                 if root.name == "ol":  # TODO 数字列表
-                    # add_number_list(root)
+                    add_number_list(root)
                     pass
 
                 if root.name == "ul":  # TODO 无序列表 或 TODO_List
-                    # add_bullet_list(root)
+                    add_bullet_list(root)
                     pass
 
-                if root.name == "table":
-                    # fixme 测试看不同的效果而已
-                    # for i in range(1, 7):
+                if root.name == "table":  # 表格
                     add_table(root)
                     pass
 
                 if root.name == "h1" or root.name == "h2" or \
                         root.name == "h3" or root.name == "h4" or root.name == "h5":
-                    para = add_heading(root.string, root.name)
+                    add_heading(root.string, root.name)
 
         document.save(docx_path)
         print("docx saved to:", docx_path)
