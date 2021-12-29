@@ -15,6 +15,8 @@ from docx.styles.style import _ParagraphStyle
 from docx.text.paragraph import Paragraph
 from docx.text.run import Run
 
+from provider.docx_plus import add_hyperlink
+
 debug_state: bool = False
 auto_open: bool = True
 show_image_desc: bool = True  # 是否显示图片的描述，即 `![desc](src/img)` 中 desc的内容
@@ -228,7 +230,6 @@ def add_split_line():
     pass
 
 
-from src.provider.docx.docx_plus import *
 
 
 # TODO 超链接

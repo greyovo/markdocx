@@ -1,6 +1,6 @@
 import markdown
 
-from provider.parser.extension.ext_md_syntax import ExtMdSyntax
+from parser.extension import ExtMdSyntax
 
 
 class MarkdownParser:

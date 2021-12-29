@@ -1,22 +1,39 @@
-from src.test.test_md2html import MarkdownParser
-from src.test.test_html2docx import DocxProcessing
-import time
 import argparse
+import os
+import sys
+
+from src.parser.md_parser import md2html
+import time
+
+from src.provider.docx_processor import DocxProcessor
+from utils.yaml_utils import read_style_yaml
+
+config: dict = {
+    "version": "0.1.0"
+}
 
 if __name__ == '__main__':
-    start_time = time.time()
-    md_path = "example.md"  # 你的md源文件路径
-    html_path = "example.html"  # 中途临时导出的HTML文件路径，可不修改
-    docx_path = "example.docx"  # 最后生成的docx文件存放路径
+    if len(sys.argv) == 1:
+        sys.argv.append("-h")
 
-    # md_path = "note_demo.md"  # 你的md源文件路径
-    # html_path = "note_demo.html"  # 中途临时导出的HTML文件路径，可不修改
-    # docx_path = "note_demo.docx"  # 最后生成的docx文件存放路径
+    parser = argparse.ArgumentParser(description="markdocx - %s" % config["version"])
+    parser.add_argument('input', help="Markdown file path")
+    parser.add_argument('-o', '--output', help="Optional. Path to save docx file")
+    parser.add_argument('-s', '--style', default="./config/default_style.yaml",
+                        help="Optional. YAML file with style configuration")
+    # todo 通过yaml自定义样式文件
 
-    _ = MarkdownParser(md_path, html_path)
-    _ = DocxProcessing(html_path, docx_path)
+    args = parser.parse_args()
 
+    start_time = time.time()  # 记录转换耗时
+
+    md2html(args.input, args.input + ".html")
+    docx_path = args.output if args.output is not None else args.input + ".docx"
+
+    DocxProcessor(style_conf=read_style_yaml(args.style)) \
+        .html2docx(args.input + ".html", docx_path)
     done_time = time.time()
-    print("All done. Time cost:", "%.4f" % (done_time - start_time), "sec")
-    # ===============
 
+    print("Convert finished in:", "%.4f" % (done_time - start_time), "sec(s).")
+    i = os.path.abspath(docx_path).rfind("\\")
+    print("Docx saved to:", os.path.abspath(docx_path), ".")
