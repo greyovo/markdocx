@@ -35,7 +35,6 @@ class DocxProcessor:
         p = self.document.add_paragraph(content, style="Heading%d" % level)
         return p
 
-    # bold, italic, strike...
     # noinspection PyMethodMayBeStatic
     def add_run(self, p: Paragraph, content: str, char_style: str = "plain"):
         # fixme 行内的样式超过一个的句子会被忽略，如：

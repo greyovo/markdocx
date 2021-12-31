@@ -21,6 +21,8 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--output', help="Optional. Path to save docx file")
     parser.add_argument('-s', '--style', default="./config/default_style.yaml",
                         help="Optional. YAML file with style configuration")
+    parser.add_argument('-a', action="store_true",
+                        help="Optional. Automatically open docx file when finished converting")
     # todo 通过yaml自定义样式文件
 
     args = parser.parse_args()
@@ -37,3 +39,6 @@ if __name__ == '__main__':
     print("Convert finished in:", "%.4f" % (done_time - start_time), "sec(s).")
     i = os.path.abspath(docx_path).rfind("\\")
     print("Docx saved to:", os.path.abspath(docx_path), ".")
+
+    if args.a:
+        os.startfile(os.path.abspath(docx_path))

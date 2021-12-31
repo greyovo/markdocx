@@ -1,57 +1,67 @@
-# 参数解释。注意冒号或短横线后必须接一个空格，不能省略。
+
+#  参数解释。注意冒号或短横线后必须接一个空格，不能省略。
+#
 #  font:
 #    default: 西文字体，默认 [Times New Roman]
-#    eastern: 中文字体，默认 [宋体]
-#  indent: 首行缩进，默认 [0]，单位：倍
-#  size: 字体大小，默认 [12]，单位：pt
-#  line-spacing: 行距，默认 [1.2] 单位：倍，表示 1.2 倍行距，
+#    east-asia: 中文字体，默认 [宋体]
+#    size: 字体大小，默认 [12]，单位：pt
+#    color: RGB颜色的 16 进制值，默认 [0x000000] 纯黑色
+#    extra: 额外的样式，默认不添加这些样式。支持下列样式，有则生效，无则忽略
+#    - bold 加粗
+#    - italic 斜体
+#    - underline 下划线
+#    - strike 删除线
+#  first-line-indent: 首行缩进，默认 [0]，单位：倍
+#  line-spacing: 行距，默认 [1.2] 单位：倍，表示行距设置为 1.2 倍行高，
 #  space:
 #    before 段前空格，默认 [0]
 #    after: 段后空格，默认 [0]
-#  color: RGB颜色的 16 进制值，默认 [000000] 纯黑色
-#  extra: 额外的样式，默认不添加这些样式。支持下列样式，有则生效，无则忽略
-#  - bold 加粗
-#  - italic 斜体
-#  - underline 下划线
-#  - strike 删除线
-#  - highlight 高亮
+
 
 title:
   font:
     default: Times New Roman
-    east-asian: 黑体
-  size: 16pt
+    east-asia: 黑体
+    size: 16
   align: center
 
 h1:
   font:
     default: Times New Roman
-    east-asian: 黑体
-  size: 14pt
+    east-asia: 黑体
+    size: 14
   line-spacing: 1.5x
   space-before-after: 0 0
 
 h2:
   font:
     default: Times New Roman
-    east-asian: 黑体
-  size: 12pt
-  line-spacing: 1.5x
+    east-asia: 黑体
+    size: 12
+  line-spacing: 1.5
   space-before-after: 0 0
 
 h3:
   font:
     default: Times New Roman
-    east-asian: 楷体
-  size: 12pt
-  line-spacing: 1.5x
+    east-asia: 楷体
+    size: 12
+  line-spacing: 1.5
+  space-before-after: 0 0
+
+h4:
+  font:
+    default: Times New Roman
+    east-asia: 仿宋
+    size: 12
+  line-spacing: 1.5
   space-before-after: 0 0
 
 normal:
   font:
     default: Times New Roman
-    east-asian: 宋体
-  indent: 2x
-  size: 12pt
-  line-spacing: 1.5x  # 1.5倍行距
-  color: 000000       # RGB Color in Hex, 000000 => black
+    east-asia: 宋体
+    size: 12
+  indent: 2
+  line-spacing: 1.5
+  color: 000000

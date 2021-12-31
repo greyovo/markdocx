@@ -42,8 +42,10 @@ test_main.py "D:/folder/input.md" -o "D:/folder/input.md"
 - [x] 超链接
 - [x] 分割线，在docx中表现为分页符
 - [x] 加粗、斜体、下划线
+- [x] 行内代码
 - [x] 上标、下标
 - [x] 高亮文本
+
 
 ## 未来计划
 
