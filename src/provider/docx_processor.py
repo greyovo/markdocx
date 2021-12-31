@@ -213,7 +213,7 @@ class DocxProcessor:
         debug(children.contents)
         for p in children.contents:
             if p.string != "\n":
-                self.add_paragraph(p, p_style="Block Quote")
+                self.add_paragraph(p, p_style="Quote")
 
     def html2docx(self, html_path: str, docx_path: str):
         # 打开HTML

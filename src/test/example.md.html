@@ -1,0 +1,136 @@
+<head><meta charset="utf-8"></head>
+<body>
+<h1>你好，Markdown</h1>
+<p>如您所见，# 号开头即为标题，从一级到六级。</p>
+<h3>列表项</h3>
+<p>使用数字和减号来实现有序和无序列表：</p>
+<ol>
+<li>有序第一项，如果在里面内嵌<strong>粗体</strong>、<em>斜体</em><ol>
+<li>有序子项</li>
+<li>有序另一子项</li>
+</ol>
+</li>
+<li>有序第二项</li>
+</ol>
+<p>无序列表二级</p>
+<ul>
+<li>无序第一项<ul>
+<li>无序sub1</li>
+<li>无序sublist2</li>
+<li>sub33333</li>
+</ul>
+</li>
+<li>无序第二项</li>
+</ul>
+<p>此外，还有清单列表：</p>
+<ul>
+<li>[x] 普通段落</li>
+<li>[x] 大纲标题</li>
+<li>[x] 图片</li>
+<li>[ ] 有序列表、无序列表、TODO List</li>
+<li>[x] 引用块</li>
+<li>[x] 表格</li>
+<li>[ ] 超链接</li>
+<li>[ ] 分割线</li>
+<li>[x] 加粗、斜体、下划线</li>
+<li>[x] 上标、下标</li>
+<li>[x] 高亮文本</li>
+</ul>
+<h2>表格</h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Age</th>
+<th>Sex</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Jack</td>
+<td>22</td>
+<td>male</td>
+</tr>
+<tr>
+<td>Grace</td>
+<td>33</td>
+<td>female</td>
+</tr>
+</tbody>
+</table>
+<p>啊？</p>
+<table>
+<thead>
+<tr>
+<th align="left"><strong>时间</strong></th>
+<th><strong>主要内容</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><strong>2021.11.15 - 2022.11.30</strong></td>
+<td>编写、完善和提交开题报告</td>
+</tr>
+<tr>
+<td align="left"><strong>2021.11.31 - 2022.12.31</strong></td>
+<td>分析并明确需求，确定前后端整体架构，设计数据库表，绘制软件原型图，确认方案可行性</td>
+</tr>
+<tr>
+<td align="left"><strong>2022.01.01 - 2022.01.31</strong></td>
+<td>学习Android开发的基础知识，Flutter框架的用法，学习SpringBoot框架、常见设计模式、在服务器部署的相关知识</td>
+</tr>
+<tr>
+<td align="left"><strong>2022.02.01 - 2022.03.15</strong></td>
+<td>着手编写、调试与部署后端服务程序，着手编写、调试移动端程序，使系统整体按照预定的业务逻辑运行</td>
+</tr>
+<tr>
+<td align="left"><strong>2022.03.15 - 2022.04.01</strong></td>
+<td>检查并完善先前编写的前后端程序，修复漏洞，同时开始整理资料，着手编写论文</td>
+</tr>
+<tr>
+<td align="left"><strong>2022.04.14 前</strong></td>
+<td>论文编写、修改、定稿，并在维普自费查重（要求重复率＜20%）</td>
+</tr>
+<tr>
+<td align="left"><strong>2022.04.15 前</strong></td>
+<td>将论文提交到系统（只有一次机会）</td>
+</tr>
+<tr>
+<td align="left"><strong>2022.04.15 - 2022.05.07</strong></td>
+<td>准备答辩</td>
+</tr>
+<tr>
+<td align="left"><strong>2022.05.08</strong></td>
+<td>计算机学院正式答辩</td>
+</tr>
+</tbody>
+</table>
+<h2>文字格式</h2>
+<p><code>Markdown</code> 是当下流行文档书写语言，旨在通过简单的语法实现对常见格式的支持。</p>
+<p>标准 Markdown 支持 <strong>粗体</strong> 和 <em>斜体</em> 文本，部分实现支持 <strike>删除线</strike>。下划线则需通过内嵌 HTML 实现，<u>像是这样</u>。</p>
+<p>如果我想<u><strong>又加粗又<em>斜体</em>又下划线</strong></u>，如何？</p>
+<p>还有上标 X<sup>2</sup> 和下标 Y<sub>3</sub>，将文字<highlight>高亮</highlight>起来，属于扩展格式，手动支持了。</p>
+<h2>段落格式</h2>
+<h3>代码块</h3>
+<p><code>cpp
+int main() {
+    cout &lt;&lt; "hello world" &lt;&lt; endl;
+    return 0;
+}</code></p>
+<h3>LaTex 演示</h3>
+<p>$$
+y=\sin(x)
+$$</p>
+<h3>引用块</h3>
+<blockquote>
+<p>请随意编辑这个文件，您总是可以在<a href="https://docs.taio.app/#/cn/editor/hello-markdown">这里</a>找到在线版本。</p>
+<p>这是引用块的第二段</p>
+</blockquote>
+<h2>分割线</h2>
+<p>分割线前的内容</p>
+<hr />
+<p>后面的内容</p>
+<h2>链接和图片</h2>
+<p>使用中括号包裹标题，小括号包裹内容：<a href="https://taio.app/cn/">Taio 官网</a></p>
+<p><img alt="本地图片1" src="assets/small_img.png" /></p>
+<p><img alt="" src="assets/windows11.png" /></p></body>
