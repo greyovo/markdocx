@@ -10,6 +10,7 @@ from docx.enum.text import *
 from docx.shared import Inches, RGBColor, Pt
 from docx.text.paragraph import Paragraph
 from docx.text.run import Run
+from requests import HTTPError
 
 from src.provider.docx_plus import add_hyperlink
 from src.provider.style_manager import StyleManager
@@ -77,14 +78,15 @@ class DocxProcessor:
             run.add_picture(img_src, width=Inches(5.8))
         else:
             img_src = elem["title"]
-            # if img_src.startswith("http"):
-            print("[fetching image...]:", img_src)
-            image_bytes = urlopen(img_src).read()
-            data_stream = io.BytesIO(image_bytes)
-            run.add_picture(data_stream, width=Inches(5.8))
+            print("[fetching image]:", img_src)
+            try:
+                image_bytes = urlopen(img_src, timeout=10).read()
+                data_stream = io.BytesIO(image_bytes)
+                run.add_picture(data_stream, width=Inches(5.8))
+            except Exception as e:
+                print("[RESOURCE ERROR]:", e)
 
         # 如果选择展示图片描述，那么描述会在图片下方显示
-
         if show_image_desc and elem["alt"] != "":
             desc_p: Paragraph = self.document.add_paragraph(elem["alt"], style=MDX_STYLE.CAPTION)  # TODO 图片描述的显示样式
             desc_p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
