@@ -1,7 +1,4 @@
-import string
-
 import docx
-import warnings
 
 from docx.enum.style import WD_STYLE_TYPE
 

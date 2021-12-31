@@ -23,9 +23,7 @@ class StyleManager:
             self.set_style(s)
         # TODO 还有什么样式设置呢？
         s = SimpleStyle("Normal", "Normal", self.style_conf["normal"])
-        # print(s)
-        self.set_style(SimpleStyle("Normal", "Normal", self.style_conf["normal"]))
-        # self.set_style(SimpleStyle("SimpleTable", "Normal", self.style_conf["normal"]))
+        self.set_style(s)
 
     # 通用的样式设置
     def set_style(self, _style: SimpleStyle):

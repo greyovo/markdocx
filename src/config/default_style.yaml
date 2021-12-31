@@ -16,10 +16,11 @@
 #    before 段前空格，默认 [0] pt
 #    after: 段后空格，默认 [0] pt
 
+# h1~h4表示1到4级标题
 h1:
   font:
     default: Times New Roman
-#    east-asia: 黑体
+    east-asia: 黑体
     size: 30
   line-spacing: 1.5
 
@@ -44,12 +45,17 @@ h4:
     size: 12
   line-spacing: 1.5
 
+# 正文
 normal:
   font:
     default: Times New Roman
     east-asia: 宋体
     size: 12
-    color: 000000 # 必须是字符串
-  indent: 10 # fixme 无效
+    color: "000000" # 必须是字符串
   line-spacing: 1.5
+  #  first-line-indent: 2
+  space:
+    before: 0
+    after: 0
+
 
