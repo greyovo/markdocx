@@ -49,10 +49,31 @@ test_main.py "D:/folder/input.md" -o "D:/folder/input.md"
 
 ## 未来计划
 
-- [ ] 使用 yaml 导入样式参数，方便自定义样式
+- [x] 使用 yaml 导入样式参数，方便自定义样式
 - [ ] 提供 GUI
  
 ## 暂时无法实现
 - LaTeX
 - 脚注
+
+
+## YAML 格式
+
+```yaml
+font:
+  default: 西文字体，默认 [Times New Roman]
+  east-asia: 中文字体，默认 [宋体]
+  size: 字体大小，默认 [12]，单位：pt
+  color: RGB颜色 16 进制值，必须是字符串，默认 ["000000"] 纯黑色
+  extra: 额外的样式，默认不添加这些样式。支持下列样式，有则生效，无则忽略
+  - bold 加粗
+  - italic 斜体
+  - underline 下划线
+  - strike 删除线
+first-line-indent: 首行缩进，默认 [0]，单位：倍
+line-spacing: 行距，默认 [1.2] 单位：倍，表示行距设置为 1.2 倍行高，
+space:
+  before: 段前空格，默认 [0] pt
+  after: 段后空格，默认 [0] pt
+```
 

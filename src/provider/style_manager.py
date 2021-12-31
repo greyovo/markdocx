@@ -6,7 +6,7 @@ from docx.styles.style import _ParagraphStyle, BaseStyle
 from docx.enum.style import WD_STYLE_TYPE
 from docx.styles.styles import Styles
 
-from src.provider.simplestyle import SimpleStyle
+from src.provider.simple_style import SimpleStyle
 
 
 class StyleManager:
@@ -23,7 +23,7 @@ class StyleManager:
             self.set_style(s)
         # TODO 还有什么样式设置呢？
         s = SimpleStyle("Normal", "Normal", self.style_conf["normal"])
-        print(s)
+        # print(s)
         self.set_style(SimpleStyle("Normal", "Normal", self.style_conf["normal"]))
         # self.set_style(SimpleStyle("SimpleTable", "Normal", self.style_conf["normal"]))
 
@@ -43,7 +43,7 @@ class StyleManager:
         new_style.font.name = _style.font_default  # 只设置name是设置西文字体
         new_style.font.size = Pt(_style.font_size)
         new_style._element.rPr.rFonts.set(qn('w:eastAsia'), _style.font_east_asia)  # 要额外设置中文字体
-        new_style.font.color.rgb = RGBColor(0, 0, 0).from_string(_style.font_color)
+        new_style.font.color.rgb = RGBColor.from_string(_style.font_color)
         # 加粗、斜体、下划线、删除线
         new_style.font.bold = _style.font_bold
         new_style.font.italic = _style.font_italic
@@ -64,3 +64,4 @@ class StyleManager:
         # 显示在快捷样式窗口上
         new_style.quick_style = True
         return
+

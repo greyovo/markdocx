@@ -1,6 +1,7 @@
 import string
 
 import docx
+import warnings
 
 from docx.enum.style import WD_STYLE_TYPE
 
@@ -66,28 +67,35 @@ class SimpleStyle:
         try:
             self.font_default = conf["font"]["default"]
             self.font_east_asia = conf["font"]["east-asia"]
+
             if str(conf["font"]["size"]).isdigit():
                 self.font_size = conf["font"]["size"]
             else:  # 如果是以中文形式给出的字号，进行转换
                 self.font_size = _zihao_to_pt(conf["font"]["size"])
-        except ValueError:
-            print(("[YAML ERROR]:", style_name,
-                   "Error occurred in setting font style and has been set to:"),
+        except KeyError:
+            print("[YAML ERROR]:", style_name,
+                  "| Error occurred in setting font style. Set to:",
                   self.font_default, self.font_east_asia, str(self.font_size) + "pt")
 
         # 颜色有指定时检查，不指定默认黑色
         if conf["font"].get("color") is not None:
             try:
+                if type(conf["font"]["color"]) != str \
+                        or len(conf["font"]["color"]) != 6:
+                    raise TypeError
                 # 尝试进行转换为16进制数，并且是否符合RGB大小
-                hex_num = int(str(conf["font"]["color"]), 16)
+                hex_num = int(conf["font"]["color"], 16)
                 if 0 <= hex_num <= 0xFFFFFF:
                     self.font_color = str(conf["font"]["color"])
                 else:
                     raise ValueError
             except ValueError:
                 print("[YAML ERROR]:", style_name,
-                      "font-color value isn't a hex or not in range [0, FFFFFF] and "
-                      "has been default to black(000000).")
+                      "| Value of color isn't a hex or out of [000000, FFFFFF].",
+                      "Default to black(000000).")
+            except TypeError:
+                print("[YAML ERROR]:", style_name, "| Value of color must be string with 6 characters.",
+                      "Default to black(000000).")
 
         # 加粗、斜体、下划线、删除线
         if conf.get("font").get("extra"):
