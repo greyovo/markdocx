@@ -1,3 +1,5 @@
+import string
+
 import docx
 
 from docx.enum.style import WD_STYLE_TYPE
@@ -41,10 +43,10 @@ class SimpleStyle:
     font_size: float = 14
     font_color: str = "000000"
 
-    bold: bool = False
-    italic: bool = False
-    underline: bool = False
-    strike: bool = False
+    font_bold: bool = False
+    font_italic: bool = False
+    font_underline: bool = False
+    font_strike: bool = False
 
     first_line_indent: int = 0
     line_spacing: int = 0
@@ -79,7 +81,7 @@ class SimpleStyle:
                 # 尝试进行转换为16进制数，并且是否符合RGB大小
                 hex_num = int(str(conf["font"]["color"]), 16)
                 if 0 <= hex_num <= 0xFFFFFF:
-                    self.font_color = conf["font"]["color"]
+                    self.font_color = str(conf["font"]["color"])
                 else:
                     raise ValueError
             except ValueError:
@@ -89,7 +91,8 @@ class SimpleStyle:
 
         # 加粗、斜体、下划线、删除线
         if conf.get("font").get("extra"):
-            self.font_bold = "bold" in list(conf["font"]["extra"])
+            print(conf["font"]["extra"])
+            self.font_bold = "bold" in (conf["font"]["extra"])
             self.font_italic = "italic" in list(conf["font"]["extra"])
             self.font_underline = "underline" in list(conf["font"]["extra"])
             self.font_strike = "strike" in list(conf["font"]["extra"])
@@ -103,3 +106,17 @@ class SimpleStyle:
                 self.space_before = conf["space"]["before"]
             if conf.get("space").get("after"):
                 self.space_after = conf["space"]["after"]
+
+    def __str__(self) -> str:
+        return "".join(str(i) for i in (
+            self.style_name, " ",
+            self.font_default, " ",
+            self.font_east_asia, " ",
+            self.font_size, " ",
+            self.font_color, " ",
+            "space:(", self.space_before, " ", self.space_after, ") ",
+            "bold-", self.font_bold, " ",
+            "italic-", self.font_italic, " ",
+            "underline-", self.font_underline, " ",
+            "strike-", self.font_strike
+        ))
