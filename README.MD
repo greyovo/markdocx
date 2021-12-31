@@ -8,53 +8,33 @@
 
 1. 需要 Python 3.0+ 环境
 2. 安装依赖 `pip install -r requirements.txt`
-3. 进入 `src/test`，终端执行命令：
+3. 进入 `src/test`，终端执行命令：`main.py path/to/your/file.md`，将在同目录下生成同名 docx 文件。
+
+完整命令示例：
 
 ```shell script
-test_main.py input.md -o ouput.docx
+main.py input.md -o ouput.docx -s style.yaml -
 ```
-其中 `-o` 参数是可选的，没有则保存到与 `input.md` 同目录位置、同名的 docx 文件。
-
-如果是路径包含文件夹，需要用英文(半角)双引号包起来，如
+其中：
+ - `-o` 可选参数，其后附上输出路径，默认保存到与 `input.md` 同目录位置、同名的 Word 文件。
+ - `-s` 可选参数，其后附上定义样式的 YAML 文件的路径。默认使用内置样式 `src/config/default_style.yaml`。
+ - `-a` 可选参数，在完成导出后自动打开 Word 文件
+ 
+注意，如果是路径包含文件夹，需要用英文(半角)双引号包起来，如
 
 ```shell script
-test_main.py "D:/folder/input.md" -o "D:/folder/input.md"
+main.py "D:/folder/input.md" -o "D:/folder/input.md"
 ```
 
 ## 已知问题
 
-1. 行内的样式超过一个的句子会在解析时会被忽略，**不会**出现在最终word文件中。例如：
+1. 行内的样式超过一个的句子会在解析时会被忽略，**不会**出现在最终word文件中。例如此类：
     ```markdown
     **又加粗又*斜体***
     <u>**又加粗又*斜体*又下划线**</u>
     ```
     请避免使用复合标记。
 2. 代码块中如果有 `#` 或 `*` 等 markdown 行内标记的符号，有可能会被误识别为markdown文本而错误渲染，待解决。
-
-## 样式 TODO
-
-- [x] 普通段落
-- [x] 大纲标题
-- [x] 图片
-- [x] 有序列表、无序列表、TODO List
-- [x] 引用块
-- [x] 表格
-- [x] 超链接
-- [x] 分割线，在docx中表现为分页符
-- [x] 加粗、斜体、下划线
-- [x] 行内代码
-- [x] 上标、下标
-- [x] 高亮文本
-
-
-## 未来计划
-
-- [x] 使用 yaml 导入样式参数，方便自定义样式
-- [ ] 提供 GUI
- 
-## 暂时无法实现
-- LaTeX
-- 脚注
 
 
 ## YAML 格式
@@ -76,4 +56,30 @@ space:
   before: 段前空格，默认 [0] pt
   after: 段后空格，默认 [0] pt
 ```
+
+## 样式 TODO
+
+- [x] 普通段落
+- [x] 大纲标题
+- [x] 图片
+- [x] 有序列表、无序列表、TODO List
+- [x] 引用块
+- [x] 表格
+- [x] 超链接
+- [x] 分割线，在docx中表现为分页符
+- [x] 加粗、斜体、下划线
+- [x] 行内代码
+- [x] 上标、下标
+- [x] 高亮文本
+- [ ] 代码块排版优化（或者转换为图片）
+
+## 未来计划
+
+- [x] 使用 YAML 导入样式参数
+- [ ] 提供 GUI
+ 
+## 暂时无法实现
+- LaTeX
+- 脚注
+
 

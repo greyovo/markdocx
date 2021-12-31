@@ -1,8 +1,8 @@
 import argparse
 import sys
 
-from src.test.test_md2html import MarkdownParser
-from src.test.test_html2docx import DocxProcessing
+from test import MarkdownParser
+from test import DocxProcessing
 import time
 
 config: dict = {

@@ -96,7 +96,7 @@ class SimpleStyle:
 
         # 加粗、斜体、下划线、删除线
         if conf.get("font").get("extra"):
-            print(conf["font"]["extra"])
+            # print(conf["font"]["extra"])
             self.font_bold = "bold" in (conf["font"]["extra"])
             self.font_italic = "italic" in list(conf["font"]["extra"])
             self.font_underline = "underline" in list(conf["font"]["extra"])

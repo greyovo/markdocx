@@ -18,7 +18,7 @@ class StyleManager:
 
     def init_styles(self):
         # 设置heading 1~4
-        for i in range(1, 4):
+        for i in range(1, 5):
             s = SimpleStyle("Heading%d" % i, "Heading %d" % i,
                             self.style_conf["h%d" % i])
             self.set_style(s)
