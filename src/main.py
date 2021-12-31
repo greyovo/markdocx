@@ -23,7 +23,6 @@ if __name__ == '__main__':
                         help="Optional. YAML file with style configuration")
     parser.add_argument('-a', action="store_true",
                         help="Optional. Automatically open docx file when finished converting")
-    # todo 通过yaml自定义样式文件
 
     args = parser.parse_args()
 
