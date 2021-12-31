@@ -21,29 +21,41 @@ h1:
   font:
     default: Times New Roman
     east-asia: 黑体
-    size: 30
-  line-spacing: 1.5
+    size: 22
+  line-spacing: 0
+  space:
+    before: 15
+    after: 15
 
 h2:
   font:
     default: Times New Roman
     east-asia: 黑体
     size: 12
-  line-spacing: 1.5
+#  line-spacing: 1.5
+  space:
+    before: 11
+    after: 11
 
 h3:
   font:
     default: Times New Roman
     east-asia: 楷体
     size: 12
-  line-spacing: 1.5
+#  line-spacing: 1.5
+  space:
+    before: 11
+    after: 11
 
 h4:
   font:
     default: Times New Roman
     east-asia: 仿宋
     size: 12
-  line-spacing: 1.5
+#  line-spacing: 1.5
+  space:
+    before: 11
+    after: 11
 
 # 正文
 normal:
@@ -52,10 +64,10 @@ normal:
     east-asia: 宋体
     size: 12
     color: "000000" # 必须是字符串
-  line-spacing: 1.5
-  #  first-line-indent: 2
+  line-spacing: 1.3
+  first-line-indent: 2
   space:
-    before: 0
+    before: 5
     after: 0
 
 

@@ -15,4 +15,3 @@ class ExtMdSyntax(Extension):
         md.inlinePatterns.register(SimpleTagInlineProcessor(r'()\^(.+?)\^', 'sup'), 'sup', 188)
         # ~下标~
         md.inlinePatterns.register(SimpleTagInlineProcessor(r'()~(.+?)~', 'sub'), 'sub', 1)
-

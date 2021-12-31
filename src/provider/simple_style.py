@@ -47,7 +47,7 @@ class SimpleStyle:
     font_strike: bool = False
 
     first_line_indent: int = 0
-    line_spacing: int = 0
+    line_spacing: int = 1
     space_before: int = 0
     space_after: int = 0
 

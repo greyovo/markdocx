@@ -13,6 +13,7 @@ from docx.text.run import Run
 
 from src.provider.docx_plus import add_hyperlink
 from src.provider.style_manager import StyleManager
+from src.utils.style_enum import MDX_STYLE
 
 debug_state: bool = False
 auto_open: bool = True
@@ -66,6 +67,7 @@ class DocxProcessor:
         p: Paragraph = self.document.add_paragraph()
         p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
         run: Run = p.add_run()
+        p.paragraph_format.first_line_indent = 0
 
         img_src: str
 
@@ -84,8 +86,9 @@ class DocxProcessor:
         # 如果选择展示图片描述，那么描述会在图片下方显示
 
         if show_image_desc and elem["alt"] != "":
-            desc_p: Paragraph = self.document.add_paragraph(elem["alt"], style="Caption")  # TODO 图片描述的显示样式
+            desc_p: Paragraph = self.document.add_paragraph(elem["alt"], style=MDX_STYLE.CAPTION)  # TODO 图片描述的显示样式
             desc_p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+            desc_p.paragraph_format.first_line_indent = 0
 
     def add_table(self, table_root):
         # 统计列数
@@ -94,7 +97,7 @@ class DocxProcessor:
             if col.string != "\n":
                 col_count += 1
 
-        table = self.document.add_table(0, col_count, style="Table Grid")  # TODO 表格样式
+        table = self.document.add_table(0, col_count, style=MDX_STYLE.TABLE)  # TODO 表格样式
 
         # 表格头行
         head_row_cells = table.add_row().cells
@@ -123,7 +126,7 @@ class DocxProcessor:
         for item in number_list.children:
             if item.string == "\n":
                 continue
-            self.add_paragraph(item, p_style="List Number") \
+            self.add_paragraph(item, p_style=MDX_STYLE.LIST_NUMBER) \
                 .style.paragraph_format.space_after = Pt(1)  # TODO 数字列表样式
 
             if hasattr(item, "ol") and item.ol is not None:  # 有子序列
@@ -131,8 +134,8 @@ class DocxProcessor:
                 for item2 in item.ol.children:
                     if item2.string == "\n":
                         continue
-                    self.add_paragraph(item2, prefix="(%d). " % sub_num, p_style="List Continue") \
-                        .style.paragraph_format.space_after = Pt(1)  # TODO 数字列表样式
+                    self.add_paragraph(item2, prefix="(%d). " % sub_num, p_style=MDX_STYLE.LIST_CONTINUE) \
+                        .style.paragraph_format.first_line_indent = 0  # TODO 数字列表样式
                     sub_num += 1
             num += 1
 
@@ -146,7 +149,7 @@ class DocxProcessor:
             text: str = str(item.string)
             if text == "\n":
                 continue
-            self.add_paragraph(item, p_style="List Bullet") \
+            self.add_paragraph(item, p_style=MDX_STYLE.LIST_BULLET) \
                 .style.paragraph_format.space_after = Pt(1)  # TODO 无序列表样式 ·• ‣°º৹ ■ ◻ ■ □ ◉◎ ●◌
 
             if hasattr(item, "ul") and item.ul is not None:  # 有子序列
@@ -154,7 +157,7 @@ class DocxProcessor:
                     if item2.string == "\n":
                         continue
                     # list_para.add_run("   ◉ " + str(item2.string) + "\n")
-                    self.add_paragraph(item2, prefix="•  ", p_style="List Continue") \
+                    self.add_paragraph(item2, prefix="•  ", p_style=MDX_STYLE.LIST_CONTINUE) \
                         .style.paragraph_format.space_after = Pt(1)  # TODO 数字列表样式
 
     # 伪TODO list
@@ -164,7 +167,7 @@ class DocxProcessor:
             if item.string == "\n":
                 continue
             text: str = item.string
-            list_para = self.document.add_paragraph(style="List")
+            list_para = self.document.add_paragraph(style=MDX_STYLE.PLAIN_LIST)
             if text.startswith("[x]"):
                 # list_para.add_run(text.replace("[x]", "[ √ ]", 1) + "\n")
                 list_para.add_run("[ √ ]").font.name = "Consolas"
@@ -213,7 +216,7 @@ class DocxProcessor:
         debug(children.contents)
         for p in children.contents:
             if p.string != "\n":
-                self.add_paragraph(p, p_style="Quote")
+                self.add_paragraph(p, p_style=MDX_STYLE.BLOCKQUOTE)
 
     def html2docx(self, html_path: str, docx_path: str):
         # 打开HTML
@@ -229,7 +232,7 @@ class DocxProcessor:
             if root.string != "\n":
                 # debug("<%s>" % root.name)
                 if root.name == "p":  # 普通段落
-                    self.add_paragraph(root)
+                    self.add_paragraph(root, p_style=MDX_STYLE.PLAIN_TEXT)
                 if root.name == "blockquote":  # 引用块
                     self.add_blockquote(root)
                 if root.name == "ol":  # 数字列表

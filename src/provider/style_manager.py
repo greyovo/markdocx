@@ -7,6 +7,7 @@ from docx.enum.style import WD_STYLE_TYPE
 from docx.styles.styles import Styles
 
 from src.provider.simple_style import SimpleStyle
+from src.utils.style_enum import MDX_STYLE
 
 
 class StyleManager:
@@ -22,7 +23,8 @@ class StyleManager:
                             self.style_conf["h%d" % i])
             self.set_style(s)
         # TODO 还有什么样式设置呢？
-        s = SimpleStyle("Normal", "Normal", self.style_conf["normal"])
+        # s = SimpleStyle("Normal", "Normal", self.style_conf["normal"])
+        s = SimpleStyle(MDX_STYLE.PLAIN_TEXT, "Normal", self.style_conf["normal"])
         self.set_style(s)
 
     # 通用的样式设置
