@@ -3,11 +3,10 @@ import os
 import sys
 
 # 其他文件引入的包要在这里引入，否则打包后会出现  ModuleNotFoundError: No module named 'markdown'
-import markdown
-import bs4
-import docx
-
-from importlib import resources
+# import markdown
+# import bs4
+# import docx
+# import requests
 
 import yaml
 from yaml import FullLoader
@@ -50,6 +49,7 @@ if __name__ == '__main__':
     start_time = time.time()  # 记录转换耗时
 
     md2html(args.input, args.input + ".html")
+
     docx_path = args.output if args.output is not None else args.input + ".docx"
 
     conf = None
