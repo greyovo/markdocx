@@ -8,12 +8,12 @@
 
 1. 需要 Python 3.0+ 环境
 2. 安装依赖 `pip install -r requirements.txt`
-3. 进入 `src/test`，终端执行命令：`main.py path/to/your/file.md`，将在同目录下生成同名 docx 文件。
+3. 进入 `src`，终端执行命令：`markdocx.py path/to/your/file.md`，将在同目录下生成同名 docx 文件。
 
 完整命令示例：
 
 ```shell script
-main.py input.md -o ouput.docx -s style.yaml -
+markdocx.py input.md -o ouput.docx -s style.yaml -a
 ```
 其中：
  - `-o` 可选参数，其后附上输出路径，默认保存到与 `input.md` 同目录位置、同名的 Word 文件。
@@ -23,7 +23,7 @@ main.py input.md -o ouput.docx -s style.yaml -
 注意，如果是路径包含文件夹，需要用英文(半角)双引号包起来，如
 
 ```shell script
-main.py "D:/folder/input.md" -o "D:/folder/input.md"
+markdocx.py "D:/folder/input.md" -o "D:/folder/input.md"
 ```
 
 ## 已知问题
