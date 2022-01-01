@@ -2,12 +2,6 @@ import argparse
 import os
 import sys
 
-# 其他文件引入的包要在这里引入，否则打包后会出现  ModuleNotFoundError: No module named 'markdown'
-# import markdown
-# import bs4
-# import docx
-# import requests
-
 import yaml
 from yaml import FullLoader
 
@@ -54,10 +48,10 @@ if __name__ == '__main__':
 
     conf = None
 
-    # 在打包成exe后，直接以文件打开default_style.yaml会因为路径问题无法载入
+    # 在打包成单文件exe后，直接以文件打开default_style.yaml会因为路径问题无法载入
     # Pyinstaller 可以将资源文件一起bundle到exe中，
     # 当exe在运行时，会生成一个临时文件夹，程序可通过sys._MEIPASS访问临时文件夹中的资源
-    # https://www.cnblogs.com/darcymei/p/9397173.html
+    # https://stackoverflow.com/questions/7674790/bundling-data-files-with-pyinstaller-onefile/13790741#13790741
     if not args.style:
         args.style = resource_path(os.path.join("config", "default_style.yaml"))
 
