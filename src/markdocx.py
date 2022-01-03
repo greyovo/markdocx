@@ -37,17 +37,11 @@ if __name__ == '__main__':
                         help="Optional. YAML file with style configuration")
     parser.add_argument('-a', action="store_true",
                         help="Optional. Automatically open docx file when finished converting")
-
     args = parser.parse_args()
-
-    start_time = time.time()  # 记录转换耗时
-
-    md2html(args.input, args.input + ".html")
-
     docx_path = args.output if args.output is not None else args.input + ".docx"
 
-    conf = None
-
+    start_time = time.time()  # 记录转换耗时
+    md2html(args.input, args.input + ".html")
     # 在打包成单文件exe后，直接以文件打开default_style.yaml会因为路径问题无法载入
     # Pyinstaller 可以将资源文件一起bundle到exe中，
     # 当exe在运行时，会生成一个临时文件夹，程序可通过sys._MEIPASS访问临时文件夹中的资源
@@ -62,9 +56,8 @@ if __name__ == '__main__':
         .html2docx(args.input + ".html", docx_path)
     done_time = time.time()
 
-    print("Convert finished in:", "%.4f" % (done_time - start_time), "sec(s).")
-    i = os.path.abspath(docx_path).rfind("\\")
-    print("Docx saved to:", os.path.abspath(docx_path))
+    print("[SUCCESS] Convert finished in:", "%.4f" % (done_time - start_time), "sec(s).")
+    print("[SUCCESS] Docx saved to:", os.path.abspath(docx_path))
 
     if args.a:
         os.startfile(os.path.abspath(docx_path))

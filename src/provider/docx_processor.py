@@ -26,7 +26,7 @@ def debug(*args):
 
 
 class DocxProcessor:
-    def __init__(self, style_conf: dict = None):
+    def __init__(self, style_conf: dict):
         self.document = Document()
         if style_conf is not None:
             StyleManager(self.document, style_conf).init_styles()
@@ -250,10 +250,3 @@ class DocxProcessor:
                     self.add_heading(root.string, root.name)
 
         self.document.save(docx_path)
-
-
-if __name__ == '__main__':
-    d = DocxProcessor()
-    d.html2docx("example.html", "example.docx")
-    if auto_open:
-        os.startfile("example.docx")

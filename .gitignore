@@ -2,3 +2,5 @@
 .idea
 MEMO.MD
 \~\$*
+/build/
+/dist/
