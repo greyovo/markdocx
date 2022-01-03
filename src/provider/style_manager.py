@@ -23,6 +23,8 @@ class StyleManager:
                             self.style_conf["h%d" % i])
             self.set_style(s)
         # TODO 还有什么样式设置呢？
+        #  图片描述Caption、表格样式(?)
+
         # s = SimpleStyle("Normal", "Normal", self.style_conf["normal"])
         s = SimpleStyle(MDX_STYLE.PLAIN_TEXT, "Normal", self.style_conf["normal"])
         self.set_style(s)

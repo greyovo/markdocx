@@ -81,7 +81,7 @@ class DocxProcessor:
         if img_tag.get("style"):
             style_content: str = img_tag["style"]
             img_attr: list = style_content.strip().split(";")
-            print(img_attr)
+            # print(img_attr)
             attr: str
             for attr in img_attr:
                 if attr.find("width") != -1:
@@ -98,7 +98,7 @@ class DocxProcessor:
             run.add_picture(img_src, width=Inches(5.7 * scale / 100))
         else:
             img_src = img_tag["title"]
-            print("[fetching image]:", img_src)
+            print("[IMAGE]: fetching", img_src)
             try:
                 image_bytes = urlopen(img_src, timeout=10).read()
                 data_stream = io.BytesIO(image_bytes)
