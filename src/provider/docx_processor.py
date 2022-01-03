@@ -95,28 +95,24 @@ class DocxProcessor:
         if img_tag["src"] != "":
             img_src = img_tag["src"]
             debug("[local image]:", img_src)
-            pic_shape = run.add_picture(img_src,
-                                        width=Inches(5.8 * scale / 100))
-            if scale != 100:
-                pic_shape.width = Inches(5.8 * scale / 100)
+            run.add_picture(img_src, width=Inches(5.7 * scale / 100))
         else:
             img_src = img_tag["title"]
             print("[fetching image]:", img_src)
             try:
                 image_bytes = urlopen(img_src, timeout=10).read()
                 data_stream = io.BytesIO(image_bytes)
-                pic_shape = run.add_picture(data_stream,
-                                            width=Inches(5.8 * scale / 100))
-                if scale != 100:
-                    pic_shape.width = Inches(5.8 * scale / 100)
+                run.add_picture(data_stream, width=Inches(5.7 * scale / 100))
             except Exception as e:
                 print("[RESOURCE ERROR]:", e)
 
         # 如果选择展示图片描述，那么描述会在图片下方显示
         if show_image_desc and img_tag.get("alt"):
-            desc: Paragraph = self.document.add_paragraph(img_tag["alt"], style=MDX_STYLE.CAPTION)  # TODO 图片描述的显示样式
+            # TODO 图片描述的显示样式
+            desc: Paragraph = self.document.add_paragraph(img_tag["alt"], style=MDX_STYLE.CAPTION)
             desc.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-            desc.style.font.color.rgb = RGBColor(0, 0, 0)
+            desc.style.font.color.rgb = RGBColor(11, 11, 11)
+            desc.style.font.bold = False
             desc.paragraph_format.first_line_indent = 0
 
     def add_table(self, table_root):
@@ -198,11 +194,9 @@ class DocxProcessor:
             text: str = item.string
             list_para = self.document.add_paragraph(style=MDX_STYLE.PLAIN_LIST)
             if text.startswith("[x]"):
-                # list_para.add_run(text.replace("[x]", "[ √ ]", 1) + "\n")
                 list_para.add_run("[ √ ]").font.name = "Consolas"
                 list_para.add_run(text.replace("[x]", " ", 1))
             if text.startswith("[ ]"):
-                # list_para.add_run(text.replace("[ ]", "[   ]", 1) + "\n")
                 list_para.add_run("[   ]").font.name = "Consolas"
                 list_para.add_run(text.replace("[ ]", " ", 1))
 
@@ -253,9 +247,8 @@ class DocxProcessor:
             html_str = html_file.read()
         soup = BeautifulSoup(html_str, 'html.parser')
         body_tag = soup.contents[2]
-        # 将工作目录移动到给定的目录
+        # 将工作目录切换到指定目录
         os.chdir(os.path.abspath(html_path + "\\.."))
-
         # 逐个解析标签，并写到word中
         for root in body_tag.children:
             if root.string != "\n":
