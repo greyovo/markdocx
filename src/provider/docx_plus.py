@@ -24,7 +24,10 @@ def add_hyperlink(paragraph, url, text):
     rPr = docx.oxml.shared.OxmlElement('w:rPr')
     # Join all the xml elements together add add the required text to the w:r element
     new_run.append(rPr)
-    new_run.text = text
+    if text:
+        new_run.text = text
+    else:
+        new_run.text = url
     # new_run.font.color.rgb = RGBColor(0,0,255)
     hyperlink.append(new_run)
     paragraph._p.append(hyperlink)

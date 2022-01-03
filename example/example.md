@@ -102,10 +102,13 @@ $$
 
 使用中括号包裹标题，小括号包裹内容：[Taio 官网](https://taio.app/cn/)
 
-![本地图片1](assets/small_img.png)
+<img src="assets/small_img.png" alt="本地图片1" style="zoom:50%;" />
 
-![](assets/windows11.png)
+<img src="assets/windows11.png" style="zoom:50%;" />
+
+
 
 ![网络图片]("https://p1.itc.cn/q_70/images01/20210608/2de4b5a9f4db46ee83b1081dc557929e.jpeg")
+
 
 

@@ -2,11 +2,13 @@
 #
 import io
 import os
+import re
 from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
 from docx import Document
 from docx.enum.text import *
+from docx.shape import InlineShape
 from docx.shared import Inches, RGBColor, Pt
 from docx.text.paragraph import Paragraph
 from docx.text.run import Run
@@ -64,33 +66,58 @@ class DocxProcessor:
         if char_style == "code":
             run.font.name = "Consolas"
 
-    def add_picture(self, elem):
+    def add_picture(self, img_tag):
         p: Paragraph = self.document.add_paragraph()
         p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
         run: Run = p.add_run()
         p.paragraph_format.first_line_indent = 0
 
         img_src: str
+        scale: float = 100  # 优先级最高，单位 %
+        width_px: int = 100
+        height_px: int = 100
 
-        if elem["src"] != "":
-            img_src = elem["src"]
+        # 设置宽度
+        if img_tag.get("style"):
+            style_content: str = img_tag["style"]
+            img_attr: list = style_content.strip().split(";")
+            print(img_attr)
+            attr: str
+            for attr in img_attr:
+                if attr.find("width") != -1:
+                    # TODO 处理 style 中的宽度和高度属性
+                    width_px = int(re.findall(r"\d+", attr)[0])
+                if attr.find("height") != -1:
+                    height_px = int(re.findall(r"\d+", attr)[0])
+                if attr.find("zoom") != -1:
+                    scale = int(re.findall(r"\d+", attr)[0])
+
+        if img_tag["src"] != "":
+            img_src = img_tag["src"]
             debug("[local image]:", img_src)
-            run.add_picture(img_src, width=Inches(5.8))
+            pic_shape = run.add_picture(img_src,
+                                        width=Inches(5.8 * scale / 100))
+            if scale != 100:
+                pic_shape.width = Inches(5.8 * scale / 100)
         else:
-            img_src = elem["title"]
+            img_src = img_tag["title"]
             print("[fetching image]:", img_src)
             try:
                 image_bytes = urlopen(img_src, timeout=10).read()
                 data_stream = io.BytesIO(image_bytes)
-                run.add_picture(data_stream, width=Inches(5.8))
+                pic_shape = run.add_picture(data_stream,
+                                            width=Inches(5.8 * scale / 100))
+                if scale != 100:
+                    pic_shape.width = Inches(5.8 * scale / 100)
             except Exception as e:
                 print("[RESOURCE ERROR]:", e)
 
         # 如果选择展示图片描述，那么描述会在图片下方显示
-        if show_image_desc and elem["alt"] != "":
-            desc_p: Paragraph = self.document.add_paragraph(elem["alt"], style=MDX_STYLE.CAPTION)  # TODO 图片描述的显示样式
-            desc_p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-            desc_p.paragraph_format.first_line_indent = 0
+        if show_image_desc and img_tag.get("alt"):
+            desc: Paragraph = self.document.add_paragraph(img_tag["alt"], style=MDX_STYLE.CAPTION)  # TODO 图片描述的显示样式
+            desc.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+            desc.style.font.color.rgb = RGBColor(0, 0, 0)
+            desc.paragraph_format.first_line_indent = 0
 
     def add_table(self, table_root):
         # 统计列数
