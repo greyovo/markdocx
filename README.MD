@@ -8,8 +8,6 @@
 
 ![example](assets\example.png)
 
-
-
 ## 使用方法
 1. 在 [Release](https://github.com/greyovo/markdocx/releases) 下载可执行文件（暂未提供 macOS 版）
 2. 在可执行文件所在目录，终端执行命令：`.\markdocx path/to/your/file.md`，会在 md 文件的同目录下生成同名 docx 文件。
