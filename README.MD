@@ -116,3 +116,9 @@ h1: # 样式名称，可取的值见上表
 - LaTeX
 - 脚注
 
+## 感谢开源项目
+
+- [python-docx](https://python-docx.readthedocs.io)
+- [python-markdown](https://python-markdown.github.io)
+- [beautifulsoup4](https://beautifulsoup.readthedocs.io)
+- [pyyaml](https://pyyaml.org)
