@@ -6,7 +6,7 @@
 
 ## 效果图
 
-![example](assets\example.png)
+![example](assets/example.png)
 
 ## 使用方法
 1. 在 [Release](https://github.com/greyovo/markdocx/releases) 下载可执行文件（暂未提供 macOS 版）
