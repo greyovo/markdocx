@@ -7,7 +7,7 @@ def md2html(in_path: str, out_path: str):
     with open(in_path, "r", encoding="utf-8") as input_file:
         text = input_file.read()
 
-    html = markdown.markdown(text, extensions=[ExtMdSyntax(), 'tables'])
+    html = markdown.markdown(text, extensions=[ExtMdSyntax(), 'tables', 'sane_lists', 'fenced_code'])
 
     with open(out_path, 'w', encoding="UTF-8") as html_file:
         html_file.write("""<head><meta charset="utf-8"></head>\n<body>\n""")
