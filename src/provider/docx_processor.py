@@ -8,6 +8,7 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from docx import Document
 from docx.enum.text import *
+from docx.oxml.ns import qn
 from docx.shape import InlineShape
 from docx.shared import Inches, RGBColor, Pt
 from docx.text.paragraph import Paragraph
@@ -62,9 +63,18 @@ class DocxProcessor:
             run.font.superscript = True
         run.font.highlight_color = WD_COLOR_INDEX.YELLOW if char_style == "highlight" else None
 
+        # if char_style == "code":
+        #     run.font.name = "Consolas"
+
+    def add_code_block(self, pre_tag):
         # TODO 代码块样式
-        if char_style == "code":
-            run.font.name = "Consolas"
+        code_table = self.document.add_table(0, 1, style=MDX_STYLE.TABLE)
+        row_cells = code_table.add_row().cells
+        run = row_cells[0].paragraphs[0].add_run(pre_tag.contents[0].string[:-1])
+        # code_table.row_cells[0].paragraphs[0].style._element.rPr.rFonts.set(qn('w:eastAsia'), "黑体")  # 要额外设置中文字体
+        run.font.name = "Consolas"
+        # -1是为了去除行末的换行符
+        pass
 
     def add_picture(self, img_tag):
         p: Paragraph = self.document.add_paragraph()
@@ -276,6 +286,8 @@ class DocxProcessor:
                     self.add_table(root)
                 if root.name == "hr":
                     self.add_split_line()
+                if root.name == "pre":
+                    self.add_code_block(root)
                 if root.name == "h1" or root.name == "h2" or \
                         root.name == "h3" or root.name == "h4" or root.name == "h5":
                     self.add_heading(root.string, root.name)
