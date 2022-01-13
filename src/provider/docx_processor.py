@@ -7,10 +7,13 @@ from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
 from docx import Document
+from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.enum.text import *
-from docx.oxml.ns import qn
+from docx.oxml import parse_xml, OxmlElement
+from docx.oxml.ns import qn, nsdecls
 from docx.shape import InlineShape
 from docx.shared import Inches, RGBColor, Pt
+from docx.table import Table
 from docx.text.paragraph import Paragraph
 from docx.text.run import Run
 from requests import HTTPError
@@ -68,13 +71,11 @@ class DocxProcessor:
 
     def add_code_block(self, pre_tag):
         # TODO 代码块样式
+        # TODO 设置代码块（表格）中的中文字体，似乎只能通过指定 已设置好中文字体的样式 来达到目的
         code_table = self.document.add_table(0, 1, style=MDX_STYLE.TABLE)
         row_cells = code_table.add_row().cells
-        run = row_cells[0].paragraphs[0].add_run(pre_tag.contents[0].string[:-1])
-        # code_table.row_cells[0].paragraphs[0].style._element.rPr.rFonts.set(qn('w:eastAsia'), "黑体")  # 要额外设置中文字体
+        run = row_cells[0].paragraphs[0].add_run(pre_tag.contents[0].string[:-1])  # -1是为了去除行末的换行符
         run.font.name = "Consolas"
-        # -1是为了去除行末的换行符
-        pass
 
     def add_picture(self, img_tag):
         p: Paragraph = self.document.add_paragraph()
@@ -221,12 +222,11 @@ class DocxProcessor:
                 list_para.add_run("[   ]").font.name = "Consolas"
                 list_para.add_run(text.replace("[ ]", " ", 1))
 
-    # TODO 分割线
+    # 分割线，转换为 Word 中的分页符
     def add_split_line(self):
         self.document.add_page_break()
-        pass
 
-    # TODO 超链接
+    # 超链接
     def add_link(self, p: Paragraph, text: str, href: str):
         debug("[link]:", text, "[href]:", href)
         add_hyperlink(p, href, text)
@@ -243,7 +243,7 @@ class DocxProcessor:
         p = self.document.add_paragraph(prefix, style=p_style)
         if type(children) == str:
             p.add_run(children)
-            return
+            return p
         for elem in children.contents:  # 遍历一个段落内的所有元素
             if elem.name == "a":
                 self.add_link(p, elem.string, elem["href"])
@@ -257,10 +257,47 @@ class DocxProcessor:
 
     # from docx.enum.style import WD_STYLE
     def add_blockquote(self, children):
-        debug(children.contents)
-        for p in children.contents:
-            if p.string != "\n":
-                self.add_paragraph(p, p_style=MDX_STYLE.BLOCKQUOTE)
+        # TODO 将引用块放在1x1的表格中，优化引用块的显示效果
+        #  设置左侧缩进，上下行距
+        table: Table = self.document.add_table(0, 1)
+        row_cells = table.add_row().cells
+        p = row_cells[0].paragraphs[0]
+
+        for child in children.contents:
+            if child.string != "\n":
+                # self.add_paragraph(p, p_style=MDX_STYLE.BLOCKQUOTE)
+                if type(child) == str:
+                    p.add_run(child)
+                    return p
+                for elem in child.contents:  # 遍历一个段落内的所有元素
+                    if elem.name == "a":
+                        self.add_link(p, elem.string, elem["href"])
+                    elif elem.name == "img":
+                        self.add_picture(elem)
+                    elif elem.name is not None:  # 有字符样式的子串
+                        self.add_run(p, elem.string, elem.name)
+                    elif not elem.string == "\n":  # 无字符样式的子串
+                        self.add_run(p, elem)
+
+        shading_elm_1 = parse_xml(r'<w:shd {} w:fill="efefef"/>'.format(nsdecls('w')))
+        table.rows[0].cells[0]._tc.get_or_add_tcPr().append(shading_elm_1)
+        # table_format = table.style.paragraph_format
+
+        # 直接操作 Oxml 的方式设置左侧缩进和表格宽度
+        # noinspection PyProtectedMember
+        tbl_pr = table._element.xpath('w:tblPr')
+        # if tbl_pr:
+            # 左侧缩进
+            # e = OxmlElement('w:tblInd')
+            # e.set(qn('w:w'), "300")
+            # e.set(qn('w:type'), 'dxa')
+            # tbl_pr[0].append(e)
+            # 设置表格宽度
+            # w = OxmlElement('w:tblW')
+            # w.set(qn('w:w'), "4700")
+            # w.set(qn('w:type'), "pct")
+            # tbl_pr[0].append(w)
+
 
     def html2docx(self, html_path: str, docx_path: str):
         # 打开HTML
