@@ -94,9 +94,20 @@ class DocxProcessor:
 
         if img_tag["src"] != "":
             img_src = img_tag["src"]
-            debug("[local image]:", img_src)
-            run.add_picture(img_src, width=Inches(5.7 * scale / 100))
+            # 网络图片
+            if img_src.startswith("http://") or img_src.startswith("https://"):
+                print("[IMAGE] fetching:", img_src)
+                try:
+                    image_bytes = urlopen(img_src, timeout=10).read()
+                    data_stream = io.BytesIO(image_bytes)
+                    run.add_picture(data_stream, width=Inches(5.7 * scale / 100))
+                except Exception as e:
+                    print("[RESOURCE ERROR]:", e)
+            else:
+                # 本地图片
+                run.add_picture(img_src, width=Inches(5.7 * scale / 100))
         else:
+            # 网络图片
             img_src = img_tag["title"]
             print("[IMAGE] fetching:", img_src)
             try:
