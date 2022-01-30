@@ -37,14 +37,12 @@ markdocx "D:/my folder/the input.md" -o "D:/my folder/the output.md"
     ```
     请避免使用复合标记。
     
-2. 代码块中如果有 `#` 或 `*` 等 markdown 行内标记的符号（如 C 语言中的 `#include` 可能被错误识别为一级标题），有可能会被误识别为 markdown 文本而错误渲染，待解决。
-
-2. 无序列表和有序列表目前最大解析层级为两级，超过两层的内容可能会被丢弃
+2. 无序列表和有序列表目前最大解析层级为两级，超过两层的内容会被丢弃
 
 
 ## 自定义样式参数
 
-### 样式名称
+### 段落类型名称
 
 | YAML 中的值 | 含义     |
 | ----------- | -------- |
@@ -53,15 +51,13 @@ markdocx "D:/my folder/the input.md" -o "D:/my folder/the output.md"
 | h3          | 三级标题 |
 | h4          | 四级标题 |
 | normal      | 正文     |
-|             |          |
-|             |          |
 
 ### 示例模板
 
 完整 YAML 见 [src/config/default_style.yaml](src/config/default_style.yaml)
 
 ```yaml
-h1: # 样式名称，可取的值见上表
+h1: # 段落类型名称，可取的值见上表
   font:
     default: Times New Roman # 西文字体，默认 [Times New Roman]
     east-asia: 宋体 # 中文字体，默认 [宋体]
@@ -80,7 +76,6 @@ h1: # 样式名称，可取的值见上表
 ```
 
 
-
 ## 从源码构建
 
 1. 需要 Python 3.0+ 环境
@@ -93,8 +88,9 @@ h1: # 样式名称，可取的值见上表
 ## 未来计划
 
 - [x] 使用 YAML 导入样式参数
+- [ ] 支持更多段落类型设置
 - [ ] 提供 GUI
-- [ ] 提供 macOS 版本。需要 macOS 环境，目前我只有 Windows 设备。欢迎参与贡献:)
+- [ ] 提供 macOS 版本。目前我只有 Windows 设备，欢迎参与贡献:)
 
 ## 可解析的语法
 
